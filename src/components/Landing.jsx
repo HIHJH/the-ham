@@ -4,6 +4,10 @@ export default function Landing() {
   const dispatch = useBookingDispatch();
 
   const startBooking = (mode) => {
+    if (mode === 'pickup') {
+      window.alert('준비 중입니다. 곧 이용하실 수 있어요.');
+      return;
+    }
     dispatch({ type: 'START_BOOKING', mode });
   };
 
