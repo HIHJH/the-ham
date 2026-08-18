@@ -128,11 +128,17 @@ export default function Step1Size() {
                 <div className="size-price">월 {won(PRICE.box[key])} / 개</div>
               </div>
               <div className="stepper">
-                <button onClick={() => stepQty(key, -1)} disabled={state.boxQty[key] === 0}>
-                  −
+                <button onClick={() => stepQty(key, -1)} disabled={state.boxQty[key] === 0} aria-label="수량 감소">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6H10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  </svg>
                 </button>
                 <div className="qty">{state.boxQty[key]}</div>
-                <button onClick={() => stepQty(key, 1)}>+</button>
+                <button onClick={() => stepQty(key, 1)} aria-label="수량 증가">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M6 2V10M2 6H10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  </svg>
+                </button>
               </div>
             </div>
           ))}
