@@ -1,0 +1,36 @@
+import { useBookingDispatch } from '../state/BookingContext';
+
+export default function Landing() {
+  const dispatch = useBookingDispatch();
+
+  const startBooking = (mode) => {
+    dispatch({ type: 'START_BOOKING', mode });
+  };
+
+  return (
+    <div className="landing-wrap">
+      <div className="landing-logo-box">
+        <img
+          src="/logo.png"
+          alt="더함 로고"
+          className="landing-logo-image"
+        />
+      </div>
+
+      <div className="landing-copy">
+        <div className="landing-kicker">THE-HAM · 더함</div>
+        <h1>일상 속에 공간을 더하다</h1>
+        <p>가볍게 정리하고, 필요한 만큼만 맡겨두는 보관 서비스</p>
+      </div>
+
+      <div className="landing-actions">
+        <button className="landing-btn primary" onClick={() => startBooking('deposit')}>
+          보관 신청하기
+        </button>
+        <button className="landing-btn secondary" onClick={() => startBooking('pickup')}>
+          맡긴 짐 받아보기
+        </button>
+      </div>
+    </div>
+  );
+}
