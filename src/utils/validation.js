@@ -39,12 +39,31 @@ export function validateStep(step, state) {
     }
     case 6: {
       const needed = boxTotalQty(state);
-      if (state.photos.filter(Boolean).length < needed) {
+      if (!state.photoImage) {
         return {
           ok: false,
-          message: `모든 박스를 촬영해 주세요. (${state.photos.filter(Boolean).length}/${needed})`,
+          message: '박스 사진을 1장 업로드해 주세요.',
         };
       }
+
+      if (state.photos.length < needed) {
+        return {
+          ok: false,
+          message: `감지된 박스 수를 확인해 주세요. (${state.photos.length}/${needed})`,
+        };
+      }
+
+      const assignedNums = state.photos.map((box) => Number(box.num));
+      const hasAllNumbers = Array.from({ length: needed }, (_, i) => i + 1).every((num) =>
+        assignedNums.includes(num)
+      );
+      if (!hasAllNumbers) {
+        return {
+          ok: false,
+          message: `박스 번호를 1번부터 ${needed}번까지 빠짐없이 지정해 주세요.`,
+        };
+      }
+
       return { ok: true };
     }
     default:

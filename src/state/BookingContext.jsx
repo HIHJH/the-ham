@@ -12,7 +12,8 @@ const initialState = {
   space: null, // 'normal' | 'cold' | 'climate'
   months: 1,
   customer: { name: '', phone: '', pickup: '', pickupDetail: '', drop: '', date: '', time: '' },
-  photos: [], // { num }
+  photoImage: '',
+  photos: [], // { id, num, x, y, w, h }
 };
 
 function reducer(state, action) {
@@ -75,9 +76,29 @@ function reducer(state, action) {
         customer: { ...state.customer, [action.field]: action.value },
       };
 
-    case 'ADD_PHOTO': {
+    case 'SET_DETECTED_PHOTO':
+      return {
+        ...state,
+        photoImage: action.imageUrl,
+        photos: action.boxes,
+      };
+
+    case 'UPDATE_BOX_NUMBER': {
+      const targetIndex = state.photos.findIndex((box) => box.id === action.id);
+      if (targetIndex < 0) return state;
+
+      const nextNum = Number(action.num);
       const photos = [...state.photos];
-      photos[action.index] = { num: action.index + 1 };
+      const prevNum = photos[targetIndex].num;
+      const conflictIndex = photos.findIndex((box) => box.id !== action.id && box.num === nextNum);
+
+      photos[targetIndex] = { ...photos[targetIndex], num: nextNum };
+
+      // 번호 중복이 생기면 기존 번호를 서로 교환해 고유성을 유지한다.
+      if (conflictIndex >= 0) {
+        photos[conflictIndex] = { ...photos[conflictIndex], num: prevNum };
+      }
+
       return { ...state, photos };
     }
 
