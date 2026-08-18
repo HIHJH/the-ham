@@ -20,7 +20,7 @@ export default function Landing() {
       <div className="landing-copy">
         <div className="landing-kicker">THE-HAM · 더함</div>
         <h1>일상 속에 공간을 더하다</h1>
-        <p>가볍게 정리하고, 필요한 만큼만 맡겨두는 보관 서비스</p>
+        <p>필요한 만큼만 맡기는 생활형 보관 서비스</p>
       </div>
 
       <div className="landing-actions">
