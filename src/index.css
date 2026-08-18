@@ -418,6 +418,24 @@ p.sub {
   border: none;
   cursor: pointer;
 }
+.odd-size-tip {
+  margin: 10px 0 14px;
+  border: 1px solid #cfe0ff;
+  background: #f5f9ff;
+  color: #2a5ca7;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.odd-size-inline-hint {
+  margin-top: -2px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.4;
+}
 .field {
   margin-bottom: 12px;
 }
@@ -447,6 +465,15 @@ p.sub {
 .field select:focus {
   outline: none;
   border-color: var(--blue);
+}
+.field select.odd-size-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  background: var(--white)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%238B95A1' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 14px center;
 }
 .field input[type='date']::-webkit-input-placeholder,
 .field input[type='date']::placeholder {

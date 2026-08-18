@@ -8,6 +8,12 @@ const BOX_SIZES = [
   { key: 'l', name: '대형 박스', desc: '60×50×50cm 초과' },
 ];
 
+const ODD_SIZE_HINTS = {
+  s: '소: 한 변 100cm 이하 (예: 접이식 의자, 소형 협탁)',
+  m: '중: 한 변 100~160cm (예: 2인용 소파, 러닝머신)',
+  l: '대: 한 변 160cm 초과 (예: 3인용 소파, 매트리스)',
+};
+
 function OddItemForm({ onAdd, onCancel }) {
   const [name, setName] = useState('');
   const [size, setSize] = useState('s');
@@ -42,12 +48,13 @@ function OddItemForm({ onAdd, onCancel }) {
       </div>
       <div className="field">
         <label>사이즈</label>
-        <select value={size} onChange={(e) => setSize(e.target.value)}>
-          <option value="s">소 · 월 {won(PRICE.odd.s)}</option>
-          <option value="m">중 · 월 {won(PRICE.odd.m)}</option>
-          <option value="l">대 · 월 {won(PRICE.odd.l)}</option>
+        <select className="odd-size-select" value={size} onChange={(e) => setSize(e.target.value)}>
+          <option value="s">소 · 100cm 이하 · 월 {won(PRICE.odd.s)}</option>
+          <option value="m">중 · 100~160cm · 월 {won(PRICE.odd.m)}</option>
+          <option value="l">대 · 160cm 초과 · 월 {won(PRICE.odd.l)}</option>
         </select>
       </div>
+      <div className="odd-size-inline-hint">{ODD_SIZE_HINTS[size]}</div>
       <div className="toggle-row" style={{ marginTop: 0 }}>
         <div>
           <div className="label">완충 포장 신청</div>
