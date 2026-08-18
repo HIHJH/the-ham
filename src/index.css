@@ -458,6 +458,11 @@ p.sub {
 }
 .field input[type='date'] {
   color: var(--ink);
+  height: 48px;
+  min-height: 48px;
+  line-height: 22px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 .field input[type='date']:not(:valid) {
   color: var(--ink-3);
@@ -483,6 +488,8 @@ p.sub {
 }
 .date-field-wrap input {
   flex: 1;
+  height: 48px;
+  min-height: 48px;
 }
 .native-date-placeholder {
   position: absolute;

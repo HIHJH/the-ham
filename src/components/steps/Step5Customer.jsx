@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useBookingDispatch, useBookingState } from '../../state/BookingContext';
 
 const DEFAULT_PICKUP_TIME = '09:00';
@@ -11,29 +11,13 @@ const formatPhoneNumber = (value) => {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
 };
 
-const formatDisplayDateTime = (date, time) => {
-  if (!date) return '';
-  return `${date} ${time || DEFAULT_PICKUP_TIME}`;
-};
-
 export default function Step5Customer() {
   const { customer } = useBookingState();
   const dispatch = useBookingDispatch();
-  const postcodeWrapperRef = useRef(null);
   const dateInputRef = useRef(null);
 
   const update = (field, value) => dispatch({ type: 'UPDATE_CUSTOMER', field, value });
   const pickupDate = customer.date || '';
-  const pickupTime = customer.time || DEFAULT_PICKUP_TIME;
-  const selectedPickupTime = formatDisplayDateTime(pickupDate, pickupTime);
-
-  useEffect(() => {
-    return () => {
-      if (postcodeWrapperRef.current) {
-        postcodeWrapperRef.current.remove();
-      }
-    };
-  }, []);
 
   const loadKakaoPostcode = () => {
     return new Promise((resolve, reject) => {
@@ -66,51 +50,13 @@ export default function Step5Customer() {
         throw new Error('Kakao Postcode not available');
       }
 
-      const container = document.createElement('div');
-      container.id = 'kakao-postcode-layer';
-      Object.assign(container.style, {
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        background: 'rgba(15, 23, 42, 0.2)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      });
-
-      const panel = document.createElement('div');
-      Object.assign(panel.style, {
-        width: 'min(78vw, 340px)',
-        maxWidth: '340px',
-        height: 'min(62vh, 560px)',
-        background: '#fff',
-        borderRadius: '18px',
-        overflow: 'hidden',
-        boxShadow: '0 24px 60px rgba(15, 23, 42, 0.2)',
-      });
-
-      container.appendChild(panel);
-      document.body.appendChild(container);
-      postcodeWrapperRef.current = container;
-
       new window.daum.Postcode({
         oncomplete: (data) => {
           const baseAddress = data.roadAddress || data.jibunAddress || data.address || '';
           const detail = customer.pickupDetail || '';
           update('pickup', `${baseAddress}${detail ? ` ${detail}` : ''}`.trim());
-          if (postcodeWrapperRef.current) {
-            postcodeWrapperRef.current.remove();
-            postcodeWrapperRef.current = null;
-          }
         },
-        onclose: () => {
-          if (postcodeWrapperRef.current) {
-            postcodeWrapperRef.current.remove();
-            postcodeWrapperRef.current = null;
-          }
-        },
-      }).embed(panel);
+      }).open({ autoClose: true });
     } catch (error) {
       const val = window.prompt('픽업 주소를 직접 입력해 주세요');
       if (val === null) return;
