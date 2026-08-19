@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useStorageDispatch, useStorageState } from '../state/StorageContext';
 import {
   PRICING_CONFIG,
@@ -42,6 +42,18 @@ export default function Withdraw() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [delivery, setDelivery] = useState(initialDelivery);
   const [done, setDone] = useState(null); // { withdrawnCount, remainingCount } after 신청 완료
+  const dateInputRef = useRef(null);
+
+  const openDatePicker = () => {
+    const input = dateInputRef.current;
+    if (!input) return;
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+    input.focus();
+    input.click();
+  };
 
   const toggleItem = (id) => {
     setSelectedIds((prev) => {
@@ -307,12 +319,18 @@ export default function Withdraw() {
               </div>
               <div className="field">
                 <label>희망 배송일</label>
-                <input
-                  type="date"
-                  min={new Date().toISOString().slice(0, 10)}
-                  value={delivery.date}
-                  onChange={(e) => updateDelivery('date', e.target.value)}
-                />
+                <div className="date-field-wrap" onClick={openDatePicker}>
+                  <input
+                    className={`date-input${delivery.date ? ' has-value' : ''}`}
+                    ref={dateInputRef}
+                    type="date"
+                    min={new Date().toISOString().slice(0, 10)}
+                    value={delivery.date}
+                    onFocus={openDatePicker}
+                    onChange={(e) => updateDelivery('date', e.target.value)}
+                  />
+                  {!delivery.date && <span className="native-date-placeholder">날짜를 선택해주세요</span>}
+                </div>
               </div>
               <div className="field">
                 <label>배송 요청사항</label>
