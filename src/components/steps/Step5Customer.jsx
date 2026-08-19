@@ -1,15 +1,8 @@
 import { useRef } from 'react';
 import { useBookingDispatch, useBookingState } from '../../state/BookingContext';
+import { formatPhoneNumber } from '../../utils/format';
 
 const DEFAULT_PICKUP_TIME = '09:00';
-
-const formatPhoneNumber = (value) => {
-  const digits = (value || '').replace(/\D/g, '').slice(0, 11);
-
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-};
 
 export default function Step5Customer() {
   const { customer } = useBookingState();
@@ -79,13 +72,16 @@ export default function Step5Customer() {
 
   return (
     <div>
-      <div className="eyebrow">STEP 5</div>
+      <div className="eyebrow">STEP 6</div>
       <h1 className="title">
         보내는 분 정보와
         <br />
         픽업 장소를 알려주세요
       </h1>
       <p className="sub">입력하신 정보로 픽업 일정을 안내해 드려요.</p>
+      <div className="hint-box" style={{ marginBottom: 20 }}>
+        🚚 최초 입고 배송비는 보관료에 포함되어 있어요.
+      </div>
 
       <div className="field">
         <label>이름</label>

@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react';
 import { useBookingDispatch, useBookingState } from '../../state/BookingContext';
-import { boxTotalQty } from '../../utils/pricing';
+import { boxTotalQty, categoryIcons } from '../../utils/pricing';
+
+const boxInfoSummary = (valuable) => {
+  if (!valuable) return null;
+  return { icons: categoryIcons(valuable.categories), description: valuable.description };
+};
 
 const buildMockBoxes = (count) => {
   const safeCount = Math.max(1, count);
@@ -86,7 +91,7 @@ export default function Step6Photos() {
 
   return (
     <div>
-      <div className="eyebrow">STEP 6</div>
+      <div className="eyebrow">STEP 7</div>
       <h1 className="title">박스 사진 한 장을 올려주세요</h1>
       <p className="sub">
         사진을 업로드하면 AI가 박스를 자동 인식해요. 고객님이 번호를 확정하면 기사님이 같은 번호 기준으로
@@ -142,19 +147,37 @@ export default function Step6Photos() {
 
       {state.photos.length > 0 && (
         <div className="box-number-editor">
-          <div className="box-number-head">박스 번호 확인 ({boxCount}/{totalBoxes})</div>
-          {state.photos.map((box, idx) => (
-            <div className="box-number-row" key={box.id}>
-              <div className="box-number-label">감지 박스 {idx + 1}</div>
-              <select value={box.num} onChange={(e) => updateBoxNum(box.id, e.target.value)}>
-                {Array.from({ length: totalBoxes }, (_, i) => i + 1).map((num) => (
-                  <option key={num} value={num}>
-                    No.{num}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
+          <div className="box-number-head">
+            감지된 박스를 입력했던 박스 정보와 직접 매핑해 주세요 ({boxCount}/{totalBoxes})
+          </div>
+          {state.photos.map((box, idx) => {
+            const summary = boxInfoSummary(state.valuables[box.num - 1]);
+            return (
+              <div className="box-map-card" key={box.id}>
+                <div className="box-map-head">
+                  감지 박스 {idx + 1} → <b>No.{box.num}</b>
+                </div>
+                <div className="box-map-chips">
+                  {Array.from({ length: totalBoxes }, (_, i) => i + 1).map((num) => (
+                    <button
+                      type="button"
+                      key={num}
+                      className={`box-map-chip${box.num === num ? ' on' : ''}`}
+                      onClick={() => updateBoxNum(box.id, num)}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
+                <div className="box-map-preview">
+                  {summary?.icons && <span className="box-map-icons">{summary.icons}</span>}
+                  <span className="box-map-desc">
+                    {summary?.description ? summary.description : '세부 품목 미입력'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

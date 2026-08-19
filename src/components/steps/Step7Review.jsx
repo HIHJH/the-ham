@@ -1,5 +1,5 @@
 import { useBookingDispatch, useBookingState } from '../../state/BookingContext';
-import { SIZE_LABEL, SPACE_LABEL, won } from '../../utils/pricing';
+import { BOX_SIZE_LABEL, PRICING_CONFIG, SIZE_LABEL, SPACE_LABEL, won } from '../../utils/pricing';
 import PriceTable from '../PriceTable';
 
 function SectionHead({ title, onEdit }) {
@@ -22,18 +22,18 @@ export default function Step7Review() {
 
   return (
     <div>
-      <div className="eyebrow">STEP 7</div>
+      <div className="eyebrow">STEP 8</div>
       <h1 className="title">예약 내용을 확인해 주세요</h1>
       <p className="sub">결제 전 마지막으로 확인할게요.</p>
 
       <div className="review-section">
         <SectionHead title="📦 짐 정보" onEdit={() => jumpTo(1)} />
         {state.category === 'box'
-          ? ['s', 'm', 'l']
+          ? Object.keys(PRICING_CONFIG.boxSizes)
               .filter((s) => state.boxQty[s] > 0)
               .map((s) => (
                 <div className="review-row" key={s}>
-                  <div className="l">박스형 · {SIZE_LABEL[s]}</div>
+                  <div className="l">박스형 · {BOX_SIZE_LABEL[s]}</div>
                   <div className="v">{state.boxQty[s]}개</div>
                 </div>
               ))
@@ -86,7 +86,7 @@ export default function Step7Review() {
       <hr className="div" />
 
       <div className="review-section">
-        <SectionHead title="🚚 픽업 정보" onEdit={() => jumpTo(5)} />
+        <SectionHead title="🚚 픽업 정보" onEdit={() => jumpTo(6)} />
         <div className="review-row">
           <div className="l">이름</div>
           <div className="v">{state.customer.name || '-'}</div>
@@ -103,6 +103,11 @@ export default function Step7Review() {
       <hr className="div" />
 
       <PriceTable state={state} />
+
+      <div className="hint-box" style={{ marginTop: 14 }}>
+        ℹ️ 물건을 중간에 모두 빼내더라도 이용권은 종료일까지 유지되며, 남은 기간에 대한 환불 또는 기간 연장은
+        제공되지 않아요.
+      </div>
     </div>
   );
 }

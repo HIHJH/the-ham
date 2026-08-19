@@ -1,16 +1,18 @@
 import { createContext, useContext, useMemo, useReducer } from 'react';
+import { boxTotalQty } from '../utils/pricing';
 
-export const TOTAL_STEPS = 8;
+export const TOTAL_STEPS = 9;
 
 const initialState = {
   step: 0,
   mode: null, // 'deposit' | 'pickup'
   category: 'box', // 'box' | 'odd'
-  boxQty: { s: 0, m: 0, l: 0 },
+  boxQty: { m: 0, l: 0, xl: 0 },
   oddItems: [], // { id, name, size, cushion, qty }
-  valuables: [], // { id, name, value }
+  valuables: [], // { id, categories, description, value } — 박스 1개당 1건, 박스 개수만큼만 등록 가능
   space: null, // 'normal' | 'cold' | 'climate'
   months: 1,
+  policyAcknowledged: false,
   customer: { name: '', phone: '', pickup: '', pickupDetail: '', drop: '', date: '', time: '' },
   photoImage: '',
   photos: [], // { id, num, x, y, w, h }
@@ -41,14 +43,16 @@ function reducer(state, action) {
         oddItems: state.oddItems.filter((i) => i.id !== action.id),
       };
 
-    case 'ADD_VALUABLE':
+    case 'ADD_VALUABLE': {
+      if (state.valuables.length >= boxTotalQty(state)) return state;
       return {
         ...state,
         valuables: [
           ...state.valuables,
-          { id: Date.now(), name: '', value: 0 },
+          { id: Date.now(), categories: [], description: '', value: 0 },
         ],
       };
+    }
 
     case 'UPDATE_VALUABLE':
       return {
@@ -56,6 +60,19 @@ function reducer(state, action) {
         valuables: state.valuables.map((v) =>
           v.id === action.id ? { ...v, [action.field]: action.value } : v
         ),
+      };
+
+    case 'TOGGLE_VALUABLE_CATEGORY':
+      return {
+        ...state,
+        valuables: state.valuables.map((v) => {
+          if (v.id !== action.id) return v;
+          const has = v.categories.includes(action.category);
+          const categories = has
+            ? v.categories.filter((c) => c !== action.category)
+            : [...v.categories, action.category];
+          return { ...v, categories };
+        }),
       };
 
     case 'REMOVE_VALUABLE':
@@ -69,6 +86,9 @@ function reducer(state, action) {
 
     case 'SET_MONTHS':
       return { ...state, months: Math.min(12, Math.max(1, action.months)) };
+
+    case 'SET_POLICY_ACK':
+      return { ...state, policyAcknowledged: action.value };
 
     case 'UPDATE_CUSTOMER':
       return {

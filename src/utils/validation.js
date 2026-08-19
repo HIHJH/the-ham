@@ -1,3 +1,4 @@
+import { shouldShowPhotosStep } from './flow';
 import { boxTotalQty, hasBlockedValuable } from './pricing';
 
 /**
@@ -13,6 +14,13 @@ export function validateStep(step, state) {
       return { ok: true };
     }
     case 2: {
+      const totalBoxes = boxTotalQty(state);
+      if (state.valuables.length < totalBoxes) {
+        return {
+          ok: false,
+          message: `보관 품목 정보를 박스 개수(${totalBoxes}개)만큼 모두 입력해 주세요.`,
+        };
+      }
       if (hasBlockedValuable(state.valuables)) {
         return {
           ok: false,
@@ -28,6 +36,12 @@ export function validateStep(step, state) {
       return { ok: true };
     }
     case 5: {
+      if (!state.policyAcknowledged) {
+        return { ok: false, message: '이용 기간 정책을 확인했다는 체크가 필요해요.' };
+      }
+      return { ok: true };
+    }
+    case 6: {
       const { name, phone, pickup, date, time } = state.customer;
       if (!name || !phone || !pickup || !date || !time) {
         return {
@@ -37,7 +51,8 @@ export function validateStep(step, state) {
       }
       return { ok: true };
     }
-    case 6: {
+    case 7: {
+      if (!shouldShowPhotosStep(state)) return { ok: true };
       const needed = boxTotalQty(state);
       if (!state.photoImage) {
         return {

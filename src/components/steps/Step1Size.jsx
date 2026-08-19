@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { useBookingDispatch, useBookingState } from '../../state/BookingContext';
-import { PRICE, SIZE_LABEL, oddUnitPrice, won } from '../../utils/pricing';
-
-const BOX_SIZES = [
-  { key: 's', name: '소형 박스', desc: '40×40×40cm 이하' },
-  { key: 'm', name: '중형 박스', desc: '40×40×40 ~ 60×50×50cm' },
-  { key: 'l', name: '대형 박스', desc: '60×50×50cm 초과' },
-];
+import { PRICING_CONFIG, SIZE_LABEL, oddUnitPrice, won } from '../../utils/pricing';
 
 const ODD_SIZE_HINTS = {
   s: '소: 한 변 100cm 이하 (예: 접이식 의자, 소형 협탁)',
@@ -41,7 +35,7 @@ function OddItemForm({ onAdd, onCancel }) {
         <label>품목명</label>
         <input
           type="text"
-          placeholder="예: 3인용 소파, 러닝머신"
+          placeholder="예: 2인용 쇼파, 골프채"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -49,16 +43,16 @@ function OddItemForm({ onAdd, onCancel }) {
       <div className="field">
         <label>사이즈</label>
         <select className="odd-size-select" value={size} onChange={(e) => setSize(e.target.value)}>
-          <option value="s">소 · 100cm 이하 · 월 {won(PRICE.odd.s)}</option>
-          <option value="m">중 · 100~160cm · 월 {won(PRICE.odd.m)}</option>
-          <option value="l">대 · 160cm 초과 · 월 {won(PRICE.odd.l)}</option>
+          <option value="s">소 · 100cm 이하 · 월 {won(PRICING_CONFIG.odd.sizes.s)}</option>
+          <option value="m">중 · 100~160cm · 월 {won(PRICING_CONFIG.odd.sizes.m)}</option>
+          <option value="l">대 · 160cm 초과 · 월 {won(PRICING_CONFIG.odd.sizes.l)}</option>
         </select>
       </div>
       <div className="odd-size-inline-hint">{ODD_SIZE_HINTS[size]}</div>
       <div className="toggle-row" style={{ marginTop: 0 }}>
         <div>
           <div className="label">완충 포장 신청</div>
-          <div className="desc">파손 위험이 있는 품목에 권장 (+{won(PRICE.cushion)}/월)</div>
+          <div className="desc">파손 위험이 있는 품목에 권장 (+{won(PRICING_CONFIG.odd.cushionFee)}/월)</div>
         </div>
         <div
           className={`switch${cushion ? ' on' : ''}`}
@@ -119,13 +113,17 @@ export default function Step1Size() {
 
       {state.category === 'box' && (
         <div>
-          {BOX_SIZES.map(({ key, name, desc }) => (
+          {Object.entries(PRICING_CONFIG.boxSizes).map(([key, cfg]) => (
             <div key={key} className={`size-card${state.boxQty[key] > 0 ? ' on' : ''}`}>
               <div className="size-icon">📦</div>
               <div className="size-info">
-                <div className="size-name">{name}</div>
-                <div className="size-desc">{desc}</div>
-                <div className="size-price">월 {won(PRICE.box[key])} / 개</div>
+                <div className="size-name">{cfg.label} 박스</div>
+                <div className="size-desc">
+                  가로+세로+높이 합 {cfg.minSumCm}~{cfg.maxSumCm}cm · 무게 {cfg.minWeightKg}~{cfg.maxWeightKg}kg
+                </div>
+                {/* <div className="size-examples-label">예시</div> */}
+                <div className="size-example-text">{cfg.example}</div>
+                <div className="size-price">1개월 {won(cfg.totalPriceByMonths[1])} / 개</div>
               </div>
               <div className="stepper">
                 <button onClick={() => stepQty(key, -1)} disabled={state.boxQty[key] === 0} aria-label="수량 감소">
@@ -142,6 +140,10 @@ export default function Step1Size() {
               </div>
             </div>
           ))}
+          <div className="hint-box">
+            <div>💰 표시된 금액은 1개월 기준이에요. 보관 기간을 정하면 전체 총액을 다음 단계에서 보여드려요.</div>
+            <div>⚖️ 선택하신 규격·중량을 초과하면 추가 비용이 발생하거나 접수가 제한될 수 있어요.</div>
+          </div>
         </div>
       )}
 

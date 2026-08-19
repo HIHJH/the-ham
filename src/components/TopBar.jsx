@@ -1,9 +1,11 @@
 import { TOTAL_STEPS, useBookingDispatch, useBookingState } from '../state/BookingContext';
+import { getPrevStep } from '../utils/flow';
 
 export default function TopBar() {
-  const { step } = useBookingState();
+  const state = useBookingState();
+  const { step } = state;
   const dispatch = useBookingDispatch();
-  const displayTotal = TOTAL_STEPS - 1; // 완료 화면(8)은 진행 표시에서 제외
+  const displayTotal = TOTAL_STEPS - 1; // 완료 화면은 진행 표시에서 제외
 
   const goPrev = () => {
     if (step === 1) {
@@ -11,7 +13,7 @@ export default function TopBar() {
       return;
     }
 
-    if (step > 1) dispatch({ type: 'GO_TO_STEP', step: step - 1 });
+    if (step > 1) dispatch({ type: 'GO_TO_STEP', step: getPrevStep(step, state) });
   };
 
   const progress = Math.min(100, (step / displayTotal) * 100);
